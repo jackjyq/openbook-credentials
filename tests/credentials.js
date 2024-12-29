@@ -24,5 +24,16 @@ const credentials = () => {
       additional: "1234567890",
       extra: "abcdefg",
     },
+
+    /* the following samples are used to test, you can remove it */
+    {
+      password: "888888",
+    },
+    {
+      item: "ssh",
+      password: "hello",
+      tags: ["ssh", "Production"],
+      note: "root: 987654",
+    },
   ];
 };
