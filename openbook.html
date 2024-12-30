@@ -2901,9 +2901,20 @@
         localStorage.setItem("brightness", brightness);
       }
 
+      function getCredentials(credentials) {
+        /* post process credentials */
+        credentials.forEach((credential, index) => {
+          if (credential.tags === undefined || credential.tags.length == 0) {
+            credentials[index].tags = ["default"];
+          }
+        });
+
+        return credentials;
+      }
+
       class Main {
         constructor(credentials) {
-          this.credentials = credentials;
+          this.credentials = getCredentials(credentials);
           this.main = document.querySelector("main");
           this.preservedKeys = {
             item: true,
@@ -2924,10 +2935,8 @@
         getArticle(credential) {
           const article = document.createElement("article");
           article.appendChild(this.getHeader(credential.item || ""));
-          article.appendChild(this.getForm(credential));
-          if ("tags" in credential) {
-            article.appendChild(this.getFooter(credential.tags));
-          }
+          article.appendChild(this.getAccording(credential));
+          article.appendChild(this.getFooter(credential.tags));
 
           return article;
         }
@@ -2941,6 +2950,17 @@
           );
 
           return header;
+        }
+
+        getAccording(credential) {
+          const summary = document.createElement("summary");
+          summary.innerHTML = "&nbsp;";
+
+          const details = document.createElement("details");
+          details.appendChild(summary);
+          details.appendChild(this.getForm(credential));
+
+          return details;
         }
 
         getForm(credential) {
@@ -3121,7 +3141,7 @@
 
       class Header {
         constructor(credentials) {
-          this.credentials = credentials;
+          this.credentials = getCredentials(credentials);
           this.observer = null;
           this.header = document.querySelector("header");
         }
@@ -3247,7 +3267,12 @@
               });
             }
           });
-          return Array.from(tags).sort();
+
+          // make sure that default is in the bottom
+          tags.delete("default");
+          const result = Array.from(tags).sort();
+          result.push("default");
+          return result;
         }
       }
 
