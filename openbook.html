@@ -2888,6 +2888,19 @@
         }
       }
 
+      function setBrightness(brightness) {
+        const html = document.querySelector("html");
+        if (brightness === "0") {
+          html.setAttribute("data-theme", "dark");
+        } else if (brightness === "100") {
+          html.setAttribute("data-theme", "light");
+        } else {
+          html.removeAttribute("data-theme");
+        }
+
+        localStorage.setItem("brightness", brightness);
+      }
+
       class Main {
         constructor(credentials) {
           this.credentials = credentials;
@@ -3115,9 +3128,10 @@
 
         render() {
           this.header.appendChild(this.getHeading());
-          this.header.appendChild(document.createElement("hr"));
+          this.header.appendChild(this.getBrightness());
           this.header.appendChild(this.getSearch());
           this.header.appendChild(this.getFieldSet());
+          this.header.appendChild(document.createElement("hr"));
           this.header.appendChild(this.getFooter());
         }
 
@@ -3126,6 +3140,20 @@
           h.appendChild(document.createTextNode("Openbook Credentials"));
 
           return h;
+        }
+
+        getBrightness() {
+          const brightness = localStorage.getItem("brightness") || "50";
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.setAttribute("type", "range");
+          input.setAttribute("step", "50");
+          input.setAttribute("title", "brightness");
+          input.setAttribute("onchange", "setBrightness(this.value)");
+          input.value = brightness;
+          setBrightness(brightness);
+          label.appendChild(input);
+          return label;
         }
 
         getSearch() {
