@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An unencrypted, self-contained credential book, designed for secure and restricted environments.
+      content="An unencrypted and self-contained credential book, intended to be used in a secure and restricted environment.
       "
     />
     <meta name="author" content="jackjyq" />
@@ -3095,6 +3095,7 @@
               article.setAttribute("style", "display:none");
             }
           });
+          this.updateAccordings(keyword, tags);
         }
 
         matchKeyword(article, keyword) {
@@ -3120,6 +3121,17 @@
           } else {
             return false;
           }
+        }
+
+        updateAccordings(keyword, tags) {
+          const accordings = this.main.querySelectorAll("details");
+          accordings.forEach((according) => {
+            if (keyword.length == 0 && tags.size == 0) {
+              according.removeAttribute("open");
+            } else {
+              according.setAttribute("open", "");
+            }
+          });
         }
 
         readItemFromArticle(article) {
@@ -3220,6 +3232,7 @@
           footer.appendChild(small);
           return footer;
         }
+
         notify() {
           const keyword = this.readKeywordFromDOM();
           const tags = this.readTagsFromDOM();
