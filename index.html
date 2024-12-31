@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="An unencrypted and self-contained credential book, intended to be used in a secure and restricted environment. 
+      content="An unencrypted and self-contained credential book, intended for use in a secure and restricted environment where you have no permission to install any software or extensions, but still need to manage numerous credentials.
       "
     />
     <meta name="author" content="jackjyq" />
     <title>Openbook Credentials</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><rect width='48' height='48' fill='white' fill-opacity='0.01'/><path d='M4 7H16C20.4183 7 24 10.5817 24 15V43C24 39.6863 21.3137 37 18 37H4V7Z' fill='%23007a50' stroke='%23000000' stroke-width='4' stroke-linejoin='round'/><path d='M44 7H32C27.5817 7 24 10.5817 24 15V43C24 39.6863 26.6863 37 30 37H44V7Z' fill='%23007a50' stroke='%23000000' stroke-width='4' stroke-linejoin='round'/></svg>"
+      href="data:image/svg+xml,<svg  xmlns='http://www.w3.org/2000/svg'  width='24'  height='24'  viewBox='0 0 24 24'  fill='none'  stroke='%23007a50'  stroke-width='2'  stroke-linecap='round'  stroke-linejoin='round'  class='icon icon-tabler icons-tabler-outline icon-tabler-book'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0' /><path d='M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0' /><path d='M3 6l0 13' /><path d='M12 6l0 13' /><path d='M21 6l0 13' /></svg>"
     />
     <script src="credentials.js"></script>
     <style>
@@ -36,7 +36,7 @@
         --pico-font-family: var(--pico-font-family-sans-serif);
         --pico-line-height: 1.5;
         --pico-font-weight: 400;
-        --pico-font-size: 80%;
+        --pico-font-size: 100%;
         --pico-text-underline-offset: 0.1rem;
         --pico-border-radius: 0.25rem;
         --pico-border-width: 0.0625rem;
@@ -70,7 +70,7 @@
       }
 
       a {
-        --pico-text-decoration: underline;
+        --pico-text-decoration: none;
       }
 
       small {
@@ -654,7 +654,7 @@
       }
 
       body > header {
-        width: 20rem;
+        width: 15rem;
       }
 
       /**
@@ -873,7 +873,7 @@
         ) {
         --pico-color: var(--pico-primary-hover);
         --pico-underline: var(--pico-primary-hover-underline);
-        --pico-text-decoration: underline;
+        --pico-text-decoration: none;
       }
       :where(a:not([role="button"])):focus-visible,
       [role="link"]:focus-visible {
@@ -2066,7 +2066,7 @@
  * Card (<article>)
  */
       article {
-        width: 40rem;
+        width: 30rem;
         padding: var(--pico-block-spacing-vertical)
           var(--pico-block-spacing-horizontal);
         border-radius: var(--pico-border-radius);
@@ -2862,6 +2862,63 @@
         button.setAttribute("data-tooltip", "😼 Copied");
       }
 
+      function handleShareText(button) {
+        const item = getShareItem(button);
+        const content = getShareContent(button);
+        let result = item;
+        Object.keys(content).forEach((k) => {
+          result = result + "\n" + k + ": " + content[k];
+        });
+        navigator.clipboard.writeText(result);
+
+        button.setAttribute("data-tooltip", "😼 Copied");
+      }
+
+      function handleShareMarkdown(button) {
+        const item = getShareItem(button);
+        const content = getShareContent(button);
+        let result = "### " + item + "\n";
+        Object.keys(content).forEach((k) => {
+          result = result + "\n" + "- " + k + ": " + content[k];
+        });
+        navigator.clipboard.writeText(result);
+
+        button.setAttribute("data-tooltip", "😼 Copied");
+      }
+
+      function handleShareJavascript(button) {
+        const item = getShareItem(button);
+        const content = getShareContent(button);
+        let result = "{\n  item: '" + item + "',";
+        Object.keys(content).forEach((k) => {
+          result = result + "\n  " + k + ": '" + content[k] + "',";
+        });
+        result = result + "\n}";
+        navigator.clipboard.writeText(result);
+
+        button.setAttribute("data-tooltip", "😼 Copied");
+      }
+
+      function getShareContent(button) {
+        const form = button.parentElement.parentElement;
+        const labels = form.querySelectorAll("label");
+        const inputs = form.querySelectorAll("fieldset > input");
+
+        const kv = {};
+        for (let i = 0; i < inputs.length; i++) {
+          kv[labels[i].innerHTML] = inputs[i].value;
+        }
+
+        return kv;
+      }
+
+      function getShareItem(button) {
+        const article =
+          button.parentElement.parentElement.parentElement.parentElement;
+        const header = article.querySelector("header");
+        return header.innerHTML;
+      }
+
       function resetTooltip(button) {
         button.removeAttribute("data-tooltip");
       }
@@ -2996,6 +3053,9 @@
             }
           });
 
+          form.appendChild(this.getLabel("share"));
+          form.appendChild(this.getShareFieldSet());
+
           return form;
         }
 
@@ -3031,6 +3091,17 @@
           return fieldset;
         }
 
+        getShareFieldSet() {
+          const fieldset = document.createElement("fieldset");
+          fieldset.setAttribute("role", "group");
+
+          fieldset.appendChild(this.getShareTextButton());
+          fieldset.appendChild(this.getShareMarkdownButton());
+          fieldset.appendChild(this.getShareJavascriptButton());
+
+          return fieldset;
+        }
+
         getCopyButton() {
           const button = document.createElement("button");
           button.setAttribute("type", "button");
@@ -3058,6 +3129,37 @@
 
           return button;
         }
+
+        getShareTextButton() {
+          const button = document.createElement("button");
+          button.setAttribute("type", "button");
+          button.setAttribute("onclick", "handleShareText(this)");
+          button.setAttribute("onmouseout", "resetTooltip(this)");
+          button.appendChild(document.createTextNode("text"));
+
+          return button;
+        }
+
+        getShareMarkdownButton() {
+          const button = document.createElement("button");
+          button.setAttribute("type", "button");
+          button.setAttribute("onclick", "handleShareMarkdown(this)");
+          button.setAttribute("onmouseout", "resetTooltip(this)");
+          button.appendChild(document.createTextNode("markdown"));
+
+          return button;
+        }
+
+        getShareJavascriptButton() {
+          const button = document.createElement("button");
+          button.setAttribute("type", "button");
+          button.setAttribute("onclick", "handleShareJavascript(this)");
+          button.setAttribute("onmouseout", "resetTooltip(this)");
+          button.appendChild(document.createTextNode("javascript"));
+
+          return button;
+        }
+
         getFooter(tags) {
           const footer = document.createElement("footer");
           const fieldset = document.createElement("fieldset");
@@ -3171,7 +3273,11 @@
           const h = document.createElement("h1");
           h.appendChild(document.createTextNode("Openbook Credentials"));
 
-          return h;
+          const a = document.createElement("a");
+          a.setAttribute("href", "");
+          a.appendChild(h);
+
+          return a;
         }
 
         getBrightness() {
@@ -3223,13 +3329,17 @@
 
           return legend;
         }
+
         getFooter() {
           const footer = document.createElement("footer");
+          footer.innerHTML =
+            '<a href="https://github.com/jackjyq/openbook-credentials"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#007a50"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-github"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" /></svg></a> ';
+
           const small = document.createElement("small");
           small.innerHTML =
-            'Made by <a href="https://github.com/jackjyq/openbook-credentials">Jack Jiang</a>';
-
+            "under <a href='https://github.com/jackjyq/openbook-credentials?tab=MIT-1-ov-file'>MIT</a> license";
           footer.appendChild(small);
+
           return footer;
         }
 
