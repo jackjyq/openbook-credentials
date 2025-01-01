@@ -5,24 +5,44 @@ you may use https://vscode.dev/
 
 const getCredentials = () => [
   {
-    // sample: typical
     item: "Company Email",
     url: "https://mail.company.com",
     username: "user",
-    password: "make money",
+    password: "makemoney",
   },
   {
-    // sample: minimal
     item: "iPhone",
     password: "123456",
   },
   {
-    // sample: informative
     item: " Cloud Account",
     url: "https://www.cloud.com",
-    username: "example",
-    password: "orange juice",
-    tags: ["AWS  ", "production"],
+    username: "user",
+    password: "public_cloud",
+    tags: ["Cloud  ", "production"],
+    additional: "user",
+  },
+  {
+    item: " Cloud Account",
+    url: "https://www.cloud.com",
+    username: "admin",
+    password: "advanced",
+    tags: ["Cloud  ", "production"],
     additional: "admin",
+  },
+  {
+    item: " production VM",
+    url: "172.23.69.0",
+    username: "admin",
+    password: "connect",
+    tags: ["ssh  ", "production"],
+  },
+  {
+    item: "test database",
+    url: "172.23.69.1",
+    username: "admin",
+    password: "connect",
+    tags: ["db", "test"],
+    note: "postgresql",
   },
 ];

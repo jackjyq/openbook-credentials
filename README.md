@@ -13,9 +13,9 @@ An unencrypted and self-contained credential book, intended for use in a secure 
 
 # Getting Started
 
-- 1. put [index.html](index.html) and [credentials.js](credentials.js) into the same folder
-- 2. edit [credentials.js](credentials.js)
-- 3. open [index.html](index.html) with browser
+- download [index.html](index.html) and [credentials.js](credentials.js) into the same folder
+- edit [credentials.js](credentials.js)
+- open [index.html](index.html) with browser
 
 # Acknowledgments
 
