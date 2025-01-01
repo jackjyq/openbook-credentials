@@ -2961,7 +2961,7 @@
         localStorage.setItem("brightness", brightness);
       }
 
-      function getCredentials(credentials) {
+      function postProcessCredentials(credentials) {
         /* post process credentials */
         credentials.forEach((credential, index) => {
           if (credential.tags === undefined || credential.tags.length == 0) {
@@ -2974,7 +2974,7 @@
 
       class Main {
         constructor(credentials) {
-          this.credentials = getCredentials(credentials);
+          this.credentials = credentials;
           this.main = document.querySelector("main");
           this.preservedKeys = {
             item: true,
@@ -3204,17 +3204,39 @@
         }
 
         matchKeyword(article, keyword) {
-          const item = this.readItemFromArticle(article);
           if (keyword.length == 0) {
             return true;
-          } else if (keyword.length < 3) {
-            return item.startsWith(keyword);
+          }
+
+          const item = this.readItemFromArticle(article);
+          const itemTokens = this.tokenize(item);
+          const keywordTokens = this.tokenize(keyword);
+
+          /* return true if every keyword token matches some of the item tokens */
+          return keywordTokens.every((keywordToken) => {
+            return itemTokens.some((itemToken) =>
+              this.keywordTokenMatchItemToken(itemToken, keywordToken)
+            );
+          });
+        }
+
+        keywordTokenMatchItemToken(itemToken, keywordToken) {
+          if (keywordToken.length < 3) {
+            return itemToken.startsWith(keywordToken);
           } else {
-            return item.includes(keyword);
+            return itemToken.includes(keywordToken);
           }
         }
 
+        tokenize(string) {
+          return string
+            .split(" ")
+            .map((item) => item.trim())
+            .filter(Boolean); // remove empty token
+        }
+
         matchTags(article, tags) {
+          /* return true if article contains ALL tags  */
           const articleTags = this.readTagsFromArticle(article);
 
           if (tags.size == 0) {
@@ -3258,7 +3280,7 @@
 
       class Header {
         constructor(credentials) {
-          this.credentials = getCredentials(credentials);
+          this.credentials = credentials;
           this.observer = null;
           this.header = document.querySelector("header");
         }
@@ -3402,8 +3424,9 @@
         }
       }
 
-      main = new Main(credentials());
-      header = new Header(credentials());
+      const credentials = postProcessCredentials(getCredentials());
+      main = new Main(credentials);
+      header = new Header(credentials);
       header.observer = main;
       main.render();
       header.render();
