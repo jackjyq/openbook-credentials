@@ -45,4 +45,18 @@ const getCredentials = () => [
     tags: ["db", "test"],
     note: "postgresql",
   },
+  {
+    item: "摸鱼网",
+    url: "https://www.fish.com",
+    username: "渔民",
+    password: "老板不在",
+    tags: ["个人", "摸鱼"],
+  },
+  {
+    item: "Apple 代购",
+    url: "https://www.fakeapple.com",
+    username: "apple",
+    password: "noreliable",
+    tags: ["个人", "apple"],
+  },
 ];

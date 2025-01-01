@@ -3212,11 +3212,17 @@
         }
 
         keywordTokenMatchItemToken(itemToken, keywordToken) {
-          if (keywordToken.length < 3) {
+          if (keywordToken.length < 2 && this.isAsciiWord(keywordToken)) {
+            // avoid matching too many English words for only 1 character
             return itemToken.startsWith(keywordToken);
-          } else {
-            return itemToken.includes(keywordToken);
           }
+
+          return itemToken.includes(keywordToken);
+        }
+
+        isAsciiWord(str) {
+          const asciiRegex = /^[\x00-\x7F]*$/;
+          return asciiRegex.test(str);
         }
 
         tokenize(string) {
@@ -3253,14 +3259,13 @@
         }
 
         readItemFromArticle(article) {
-          const header = article.querySelector("header");
+          const header = article.querySelector("header > b");
 
           return header.innerHTML.toLowerCase().trim();
         }
 
         readTagsFromArticle(article) {
           const labels = article.querySelectorAll("details > summary > kbd");
-          console.log(labels);
           const tags = new Set();
           labels.forEach((label) => {
             tags.add(label.innerHTML.toLowerCase());
@@ -3351,6 +3356,7 @@
 
         getFooter() {
           const footer = document.createElement("footer");
+          footer.setAttribute("style", "vertical-align: sub;");
           footer.innerHTML =
             '<a href="https://github.com/jackjyq/openbook-credentials"><svg width="24" height="24"><use xlink:href="#icon-github"></use></svg></a> ';
 
