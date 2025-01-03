@@ -1,7 +1,7 @@
 # Openbook Credentials
 
 <div align="center">
-  <img src="favicon.svg" alt="Logo" width="80" height="80">
+  <img src="favicon/favicon.svg" alt="Logo" width="80" height="80">
   <p align="center">
     <a href="https://jackjyq.github.io/openbook-credentials/">View Demo</a>
   </p>
