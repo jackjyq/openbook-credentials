@@ -2893,9 +2893,9 @@
         const content = getShareContent(button);
         let result = "";
         if (type === "js") {
-          result = "{\n  item: '" + item + "',";
+          result = '{\n  item: "' + item + '",';
           Object.keys(content).forEach((k) => {
-            result = result + "\n  " + k + ": '" + content[k] + "',";
+            result = result + "\n  " + k + ': "' + content[k] + '",';
           });
           result = result + "\n}";
         } else if (type === "md") {
@@ -2928,8 +2928,7 @@
       }
 
       function getShareItem(button) {
-        const article =
-          button.parentElement.parentElement.parentElement.parentElement;
+        const article = button.parentElement.parentElement.parentElement;
         const header = article.querySelector("header > b");
         return header.innerHTML;
       }
