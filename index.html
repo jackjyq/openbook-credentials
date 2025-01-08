@@ -2972,6 +2972,10 @@
         localStorage.setItem("brightness", brightness);
       }
 
+      function resetFilter() {
+        window.location = window.location.pathname;
+      }
+
       class Main {
         constructor(credentials) {
           this.credentials = credentials;
@@ -3255,8 +3259,10 @@
       }
 
       class Header {
-        constructor(credentials) {
+        constructor(credentials, keyword, tags) {
           this.credentials = credentials;
+          this.keyword = keyword;
+          this.tags = tags;
           this.observer = null;
           this.header = document.querySelector("header");
         }
@@ -3268,6 +3274,7 @@
           this.header.appendChild(this.getFieldSet());
           this.header.appendChild(document.createElement("hr"));
           this.header.appendChild(this.getFooter());
+          this.notify();
         }
 
         getHeading() {
@@ -3275,7 +3282,7 @@
           h.appendChild(document.createTextNode("Openbook Credentials"));
 
           const a = document.createElement("a");
-          a.setAttribute("href", "");
+          a.setAttribute("href", "javascript:resetFilter()");
           a.setAttribute("style", "text-decoration: none;");
           a.appendChild(h);
 
@@ -3301,6 +3308,7 @@
           input.setAttribute("type", "search");
           input.setAttribute("placeholder", "Search");
           input.setAttribute("autofocus", "");
+          input.value = this.keyword;
           input.addEventListener("input", () => {
             this.notify();
           });
@@ -3349,13 +3357,49 @@
         notify() {
           const keyword = this.readKeywordFromDOM();
           const tags = this.readTagsFromDOM();
+
+          const url = new URL(location);
+          if (keyword.length == 0) {
+            url.searchParams.delete("s");
+          } else {
+            url.searchParams.set("s", keyword);
+          }
+
+          url.searchParams.delete("t");
+          tags.forEach((tag) => {
+            url.searchParams.append("t", tag);
+          });
+
+          document.title = this.getTitle(keyword, tags);
+
+          history.pushState({}, "", url);
           this.observer.update(keyword, tags);
+        }
+
+        getTitle(keyword, tags) {
+          let title = "Openbook Credentials";
+          if (keyword.length == 0 && tags.size == 0) {
+            return title;
+          }
+
+          title = keyword;
+          if (tags.size > 0) {
+            title = title + " #";
+            tags.forEach((tag) => {
+              title = title + tag + ",";
+            });
+            title = title.slice(0, -1); // remove the last comma
+          }
+          return title;
         }
 
         getTagInput(tag) {
           const input = document.createElement("input");
           input.setAttribute("type", "checkbox");
           input.setAttribute("name", tag);
+          if (this.tags.indexOf(tag) > -1) {
+            input.checked = true;
+          }
           input.addEventListener("change", () => {
             this.notify();
           });
@@ -3421,9 +3465,15 @@
         alert(error + "\nPress F12 to see the detail");
       }
 
+      const urlParams = new URLSearchParams(window.location.search);
+
       credentials = appendDefaultTag(credentials);
       main = new Main(credentials);
-      header = new Header(credentials);
+      header = new Header(
+        credentials,
+        urlParams.get("s") || "",
+        urlParams.getAll("t")
+      );
       header.observer = main;
       main.render();
       header.render();
