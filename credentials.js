@@ -1,6 +1,6 @@
 /* This file contains sample credentials. Please modify as needed.
 
-you may use https://vscode.dev/
+NOTE: in js string, \ need to be escaped as \\
 */
 
 const getCredentials = () => [

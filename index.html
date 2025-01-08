@@ -3413,7 +3413,14 @@
         return credentials;
       }
 
-      let credentials = getCredentials();
+      let credentials = [];
+      try {
+        credentials = getCredentials();
+      } catch (error) {
+        console.error(error);
+        alert(error + "\nPress F12 to see the detail");
+      }
+
       credentials = appendDefaultTag(credentials);
       main = new Main(credentials);
       header = new Header(credentials);
